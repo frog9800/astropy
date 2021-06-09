@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 
 from astropy.io import fits
 
-hdu_list = fits.open("SampleFITS/201102hg-16.fit")
-image_data = hdu_list[0].data
+image_file = "SampleFITS/201102hg-16.fit"
+hdu_list = fits.open(image_file)
+image_data = fits.getdata(image_file)
 
 plt.imshow(image_data, cmap='gray')
 plt.colorbar()
-plt.show()
 plt.savefig('samplefit.png')
+plt.show()
