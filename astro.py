@@ -11,3 +11,4 @@ image_data = hdu_list[0].data
 plt.imshow(image_data, cmap='gray')
 plt.colorbar()
 plt.show()
+plt.savefig('samplefit.png')
