@@ -1,7 +1,7 @@
 import os
 from glob import glob
 import pyfits
-import shutil
+
 from matplotlib import pyplot as plt
 
 files = glob('SampleFITS/*.fit')
