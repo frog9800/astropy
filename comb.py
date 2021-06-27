@@ -1,27 +1,18 @@
 from pathlib import Path
-import os
 
 from astropy.nddata import CCDData
-from astropy.stats import mad_std
-
+from ccdproc import ImageFileCollection
 import ccdproc as ccdp
-import matplotlib.pyplot as plt
-import numpy as np
 
-calibrated_path = Path('SampleFITS')
-reduced_images = ccdp.ImageFileCollection(calibrated_path)
+ex1_path_raw = Path('sample_combine')
 
-darks = reduced_images.summary['imagetyp'] == 'Dark Frame'
-dark_times = set(reduced_images.summary['exptime'][darks])
+ex1_images_raw = ImageFileCollection(ex1_path_raw)
 
-for exp_time in sorted(dark_times):
-    calibrated_darks = reduced_images.files_filtered(imagetyp='Dark Frame', exptime=exp_time,
-                                                     include_path=True)
+for ccd, file_name in ex1_images_raw.ccds(imagetyp='Dark Frame',  # Just get the dark frames
+                                         ccd_kwargs={'unit': 'adu'},  # CCDData requires a unit for the image if
+                                         # it is not in the header
+                                         return_fname=True  # Provide the file name too.
+                                         ):
+    # Save the result
+    ccd.write(ex1_path_reduced / file_name)
 
-    combined_dark = ccdp.combine(calibrated_darks,
-                                 method='median')
-
-    combined_dark.meta['combined'] = True
-
-    dark_file_name = 'combined_dark'.format(exp_time)
-    combined_dark.write(calibrated_path / dark_file_name)
