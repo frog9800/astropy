@@ -14,5 +14,6 @@ for ccd, file_name in ex1_images_raw.ccds(imagetyp='Dark Frame',  # Just get the
                                          return_fname=True  # Provide the file name too.
                                          ):
     # Save the result
-    ccd.write(ex1_path_reduced / file_name)
+    modified= Path('addheadsamp')
+    ccd.write(modified / file_name)
 
