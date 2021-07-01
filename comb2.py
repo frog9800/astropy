@@ -24,5 +24,5 @@ for exp_time in sorted(dark_times):
 
     combined_dark.meta['combined'] = True
 
-    dark_file_name = 'combined_darknew_{:6.3f}.fit'.format(exp_time)
+    dark_file_name = 'combined_dark_{:6.3f}.fit'.format(exp_time)
     combined_dark.write(calibrated_path / dark_file_name)
