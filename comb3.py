@@ -9,9 +9,10 @@ import ccdproc as ccdp
 import matplotlib.pyplot as plt
 import numpy as np
 
-files = 'addheadsamp/calibrated201103hr8047-10.fit','addheadsamp/calibrated201103hr8047-11.fit','aaddheadsamp/calibrated201103hr8047-12.fit'
-#calibrated_path = Path('addheadsamp')
-firstreduced_images = ccdp.ImageFileCollection(files)
+Sci_path1 = Path('Cal_science1')
+Sci_path2 = Path('Cal_science2')
+sci1_images = ccdp.ImageFileCollection(Sci_path1)
+sci2_images = ccdp.ImageFileCollection(Sci_path2)
 
 lights = firstreduced_images.summary['imagetyp'] == 'Light Frame'
 light_times = set(firstreduced_images.summary['exptime'][lights])
