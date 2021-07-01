@@ -9,4 +9,4 @@ data_directory = 'addheadsamp'
 
 im_collection = ImageFileCollection(data_directory)
 
-print(im_collection.summary['file', 'imagetyp', 'exptime'])
+print(im_collection.summary['date-obs','file', 'imagetyp', 'exptime'])
