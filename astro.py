@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from astropy.io import fits
 
-image_file = "addheadsamp/calibrated201103hr8047-10.fit"
+image_file = "Cal_science2/combined_science_17-19_600.000.fit"
 hdu_list = fits.open(image_file)
 image_data = fits.getdata(image_file)
 
