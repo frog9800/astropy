@@ -4,7 +4,7 @@ from astropy.io import fits
 from ccdproc import ImageFileCollection
 import ccdproc as ccdp
 
-data_directory = 'SampleFITS/'
+data_directory = 'addheadsamp'
 
 
 im_collection = ImageFileCollection(data_directory)

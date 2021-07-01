@@ -68,6 +68,6 @@ for light, file_name in ifc_raw.ccds(imagetyp=science_imagetyp, return_fname=Tru
                                  exposure_time=exposure, exposure_unit=u.second
                                  )
     all_reds.append(reduced)
-    calibrated_name = 'calibrated' + file_name
+    calibrated_name = 'calibrated_' + file_name
     reduced.write(reduced_path / calibrated_name )
 
