@@ -1,9 +1,10 @@
 from pathlib import Path
 import os
+import shutil
 
 from astropy.nddata import CCDData
 from astropy.stats import mad_std
-
+from astropy.io import fits
 import ccdproc as ccdp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,6 +24,9 @@ for exp_time in sorted(dark_times):
                                  )
 
     combined_dark.meta['combined'] = True
+    dark_file_name = 'new_combined_dark_{:6.3f}.fit'.format(exp_time)
+    ccdp.fits_ccddata_writer(combined_dark, dark_file_name, hdu_mask=None, hdu_uncertainty = None
+    )
 
-    dark_file_name = 'combined_dark_{:6.3f}.fit'.format(exp_time)
-    combined_dark.write(calibrated_path / dark_file_name)
+shutil.move(dark_file_name, calibrated_path) # moving a file to the original directory
+
