@@ -1,6 +1,6 @@
 from astropy.io import fits
 
-hdul = fits.open('addheadsamp/new_combined_dark_600.000.fit')
+hdul = fits.open('Cal_science1/combined_science_10-12_600.000.fit')
 
 
 hdul.info()

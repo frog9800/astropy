@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from glob import glob
+import shutil
 
 from astropy.nddata import CCDData
 from astropy.stats import mad_std
@@ -31,7 +32,8 @@ for exp_time in sorted(light_times):
     combined_science.meta['combined'] = True
 
     science_file_name = 'combined_science_10-12_{:6.3f}.fit'.format(exp_time)
-    combined_science.write(Sci_path1/ science_file_name)
+    ccdp.fits_ccddata_writer(combined_science, science_file_name, hdu_mask=None, hdu_uncertainty=None)
+    shutil.move(science_file_name, Sci_path1)
 
 for exp_time in sorted(light_times):
     calibrated_science = sci2_images.files_filtered(imagetyp='Light Frame', exptime=exp_time,
@@ -43,4 +45,5 @@ for exp_time in sorted(light_times):
     combined_science.meta['combined'] = True
 
     science_file_name = 'combined_science_17-19_{:6.3f}.fit'.format(exp_time)
-    combined_science.write(Sci_path2/ science_file_name)
+    combined_science.write(Sci_path2/ science_file_name, overwrite=True)
+    shutil.move(science_file_name, Sci_path2)
