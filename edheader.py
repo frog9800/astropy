@@ -4,5 +4,8 @@ hdu_number = 0 # HDU means header data unit
 header['CALSTAT'] = "BD"
 header['TELESCOP'] = "Barber20"
 header['INSTRUME'] = "10-C Spectrograph"
-header['OBJECT'] = "201103hr8047-"
+header['OBJECT'] = "59 Cyg (SAO 50335) 01:50, 02:01, 02:12"
+header['GRATING'] = "1200"
+header['GRATING'] = "26.0 degrees"
+
 fits.writeto('Cal_science1/output.fit', data, header, overwrite=True)

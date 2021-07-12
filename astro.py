@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from astropy.io import fits
 
-image_file = "Cal_science1/combined_science_10-12_600.000.fit"
+image_file = ""
 hdu_list = fits.open(image_file)
 image_data = fits.getdata(image_file)
 
