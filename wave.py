@@ -1,19 +1,19 @@
-from astropy.io import fits
-from astropy import units as u
 import numpy as np
-from matplotlib import pyplot as plt
-from astropy.visualization import quantity_support
-quantity_support()  # for getting units on the axes below
+import matplotlib.pyplot as plt
 
-f = fits.open('Cal_science1/combined_science_10-12_600.000.fit')
-# The spectrum is in the second HDU of this file.
-specdata = f[0].data
-f.close()
-
+from astropy.table import Table
+from astropy import units as u
+import ccdproc as ccdp
+from astropy.nddata import CCDData, StdDevUncertainty
 from specutils import Spectrum1D
-lamb = 10**specdata['loglam'] * u.AA
-flux = specdata['flux'] * 10**-17 * u.Unit('erg cm-2 s-1 AA-1')
-spec = Spectrum1D(spectral_axis=lamb, flux=flux)
+from ccdproc import trim_image, Combiner
 
-f, ax = plt.subplots()
-ax.step(spec.spectral_axis, spec.flux)
+
+
+
+
+from specreduce.extract import BoxcarExtract
+
+sci = ccdp.ImageFileCollection('Cal_science1') # spectrum of the one target star, Gl 669A
+sciimg = CCDData.read(sci, unit=u.adu)
+BoxcarExtract(sci)
