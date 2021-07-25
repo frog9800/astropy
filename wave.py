@@ -5,8 +5,8 @@ from aspired import image_reduction
 from aspired import spectral_reduction
 import plotly.io as pio
 
-science = 'Cal_science1/output.fit'
-science_frame = fits.open(science)
+science_frame = image_reduction.ImageReduction('ext.', ftype='csv')
+science_frame.inspect(save_fig=True, fig_type='jpg')
 
 
 
