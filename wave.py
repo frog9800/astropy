@@ -1,41 +1,32 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
-from astropy.table import Table
-from astropy import units as u
-
-from astropy.nddata import CCDData, StdDevUncertainty
-from specutils import Spectrum1D
-from ccdproc import trim_image, Combiner
-
-# need to get import to work in notebook w/o global package install
 import sys
-sys.path.append('..')
-import apextract as ap
-import fluxcal as fc
-import flatfield as ft
+import numpy as np
+from astropy.io import fits
+from aspired import image_reduction
+from aspired import spectral_reduction
+import plotly.io as pio
 
-sci = 'Cal_science1/combined_science_10-12_600.000.fit'
-sciimg = CCDData.read(sci, unit=u.adu)
-# BASIC REDUCTION:
-# subtract BIAS, divide FLAT, ExpTime, put in units of ADU/s
-
-
-sciimg.unit = sciimg.unit / u.s
-
-# trim off bias section
-calimg = trim_image(calimg, fits_section=calimg.header['DATASEC'])
-# Now remove FLAT from ilum section
-calimg.data[ilum,:] = calimg.data[ilum,:] / FLAT
-
-plt.figure(figsize=(6,3))
-plt.imshow(sciimg, origin='lower', aspect='auto')
-plt.clim(np.percentile(sciimg, (5, 98)))
+science = 'Cal_science1/output.fit'
+science_frame = fits.open(science)
 
 
-# Do the trace for both the Science image and the Flux Calibration images
-sci_tr = ap.trace(sciimg, display=True, nbins=25)
 
+sci = spectral_reduction.TwoDSpec(
+    science_frame,
+    readnoise=0,
+    cosmicray=False,
+    gain=1,
+    seeing=1,
+    verbose=False
+)
 
-# Extraction of the spectrum along the trace for both the Science and Flux Cal images
-sci_ex = ap.extract(sciimg, sci_tr, display=True, apwidth=10, skysep=5, skywidth=5)
+sci.ap_trace()
+sci.ap_extract(
+    apwidth=20,
+    skysep=3,
+    skywidth=5,
+    skydeg=0,
+    optimal=True,
+    display=True,
+    renderer='jpg',
+    filename='sciextract')
+
