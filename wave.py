@@ -1,38 +1,19 @@
-import sys
-import numpy as np
 from astropy.io import fits
-from aspired import image_reduction
-from aspired import spectral_reduction
-import plotly.io as pio
+import numpy as np
+from astropy.modeling.models import Gaussian2D
 import matplotlib.pyplot as plt
-pio.renderers
-pio.renderers.default = 'png'
+from astropy import stats
 
-science = 'Cal_science1/output.fit'
-science_frame = fits.open(science)
+with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
+    data = hdul[0].data  # assume the first extension is an image
+print(data[487:510, 0:1535])   # get the pixel value at x=5, y=2
 
+# get values of the subsection from x=11 to 20, y=31 to 40 (inclusive)
+#print(stats.sigma_clip(data[487:510, 0:1535], sigma=2, maxiters=5))
+hdul1= data[487:510, 0:1535]
 
+hdul1.writeto('Cal_science1/spec.fits', overwrite=True)
+#y, x = np.mgrid[0:1023, 0:1535]
+#plt.imshow(data[487:510, 0:1535])
 
-sci = spectral_reduction.TwoDSpec(
-    science_frame,
-    readnoise=0,
-    cosmicray=True,
-    gain=1,
-    seeing=1,
-    verbose=False
-)
-
-sci.ap_trace()
-sci.ap_extract(
-    apwidth=20,
-    skysep=3,
-    skywidth=5,
-    skydeg=0,
-    optimal=True,
-    display=True,
-    renderer='jpg',
-    filename='sciextract')
-
-
-plt.show()
-
+#plt.show()
