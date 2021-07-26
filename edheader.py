@@ -9,4 +9,4 @@ header['GRATING'] = "1200"
 header['GRATING'] = "26.0 degrees"
 header['DATE'] = ""
 
-fits.writeto('Cal_science1/output.fit', data, header, overwrite=True)
+fits.writeto('Cal_science1/output225.fits', data, header, overwrite=True)
