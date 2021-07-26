@@ -4,16 +4,19 @@ from astropy.io import fits
 from aspired import image_reduction
 from aspired import spectral_reduction
 import plotly.io as pio
+import matplotlib.pyplot as plt
+pio.renderers
+pio.renderers.default = 'png'
 
-science_frame = image_reduction.ImageReduction('ext.', ftype='csv')
-science_frame.inspect(save_fig=True, fig_type='jpg')
+science = 'Cal_science1/output.fit'
+science_frame = fits.open(science)
 
 
 
 sci = spectral_reduction.TwoDSpec(
     science_frame,
     readnoise=0,
-    cosmicray=False,
+    cosmicray=True,
     gain=1,
     seeing=1,
     verbose=False
@@ -29,4 +32,7 @@ sci.ap_extract(
     display=True,
     renderer='jpg',
     filename='sciextract')
+
+
+plt.show()
 
