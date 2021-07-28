@@ -11,28 +11,30 @@ with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
 
 sky = data[0, 0:1535] #edge of background
 avg = np.mean(sky) # background average
+print(avg)
+print(np.std(sky))
 stv = np.std(sky)*3 # 3x standard deviation
 sample = avg + stv
 print(sample)
 
 spec = sample < data # spectrum condition. spectrum must be more than average + 3x standard deviation of backgrouind pixel
 
-line = data[np.all(spec, axis=1), :] #slicing arrays by given condition.
+line = data[np.all(spec, axis=1), :] # slicing arrays by given condition.
 
-print(np.size(line,0))
+print(np.size(line, 0))
 
-leng= np.size(line,0) # size of sliced arrays = total number of rows of the spectrum
+leng= np.size(line, 0) # size of sliced arrays = total number of rows of the spectrum
 
 # Assign two consecutive rows.  half of the total number of spectrum rows = midpoint.
-mid1= leng/2
-mid2= mid1 - 1
+mid1 = leng/2
+mid2 = mid1 - 1
 
 #make sure to state them as integer.
 print(np.int_(mid1))
 print(np.int_(mid2))
 
 #state two consecutive rows in order.
-consec = line[[np.int_(mid2),np.int_(mid1)]]
+consec = line[[np.int_(mid2), np.int_(mid1)]]
 
 print(consec)
 

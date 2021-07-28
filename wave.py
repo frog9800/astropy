@@ -7,12 +7,11 @@ from astropy.io import ascii
 from astropy.table import Table
 
 with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
-    data = hdul[0].data  # assume the first extension is an image
-#print(data[488:513, 0:1535])   # get the pixel value at x=5, y=2
+    data = hdul[0].data  # assume the primary hdu is an image
 
-# get values of the subsection from x=11 to 20, y=31 to 40 (inclusive)
-#print(stats.sigma_clip(data[487:510, 0:1535], sigma=2, maxiters=5))
+# get values of the subsection from x=1 to 1536, y=499 to 500 (inclusive)
 hdp = data[498:499, 0:1535]
+print(hdp)
 pp = hdp.sum(axis=0)
 print(np.shape(pp))
 
@@ -22,6 +21,5 @@ inf['x'] = np.array(num, dtype=np.float64)
 inf['y'] = np.array(pp, dtype=np.float64)
 ascii.write(inf, 'values.txt', overwrite=True)
 
-#plt.imshow(data[487:510, 0:1535])
 
-#plt.show()
+
