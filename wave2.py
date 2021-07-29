@@ -11,44 +11,56 @@ with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
 
 sky = data[0:50, 0:1535] #edge of background
 avg = np.mean(sky) # background average
+cut = np.mean(data, axis=1)
+print(np.size(cut, 0))
+print(cut)
 print(avg)
 print(np.std(sky))
-stv = np.std(sky)*3 # 3x standard deviation
+stv = np.std(sky)*2.5 # 3x standard deviation
 sample = avg + stv
 print(sample)
 
-spec = sample < data # spectrum condition. spectrum must be more than average + 3x standard deviation of backgrouind pixel
 
-line = data[np.all(spec, axis=1), :] # slicing arrays by given condition.
+detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
-print(np.size(line, 0))
+min = (np.amin(detect)) # bottom of the spectrum
+max = (np.amax(detect)) # top of the spectrum
+print(min)
+print(max)
 
-leng= np.size(line, 0) # size of sliced arrays = total number of rows of the spectrum
+
+#spec = sample < data # spectrum condition. spectrum must be more than average + 3x standard deviation of backgrouind pixel
+
+#line = data[np.all(spec, axis=1), :] # slicing arrays by given condition.
+
+#print(np.size(line, 0))
+
+#leng= np.size(line, 0) # size of sliced arrays = total number of rows of the spectrum
 
 # Assign two consecutive rows.  half of the total number of spectrum rows = midpoint.
-mid1 = leng/2
-mid2 = mid1 - 1
+#mid1 = leng/2
+#mid2 = mid1 - 1
 
 #make sure to state them as integer.
-print(np.int_(mid1))
-print(np.int_(mid2))
 
-#state two consecutive rows in order.
-consec = line[[np.int_(mid2), np.int_(mid1)]]
 
-print(consec)
+#spectrum coordinate from top and bottom
+spec = data[np.int_(min):np.int_(max)]
 
-#Adding up the two rows.
-adding = consec.sum(axis=0)
+print(np.size(spec, 0))
 
-print(np.shape(adding))
+
+#Averaging out all spectrum rows.
+extract = spec.mean(axis=0)
+
+print(np.shape(extract))
 
 # Writing to 1D extraction file
 
 num = np.arange(start=1, stop=1537, step=1)
 inf = Table()
 inf['x'] = np.array(num, dtype=np.float64)
-inf['y'] = np.array(adding, dtype=np.float64)
+inf['y'] = np.array(extract, dtype=np.float64)
 ascii.write(inf, 'Cal_science1/algorithm.txt', overwrite=True)
 
 
