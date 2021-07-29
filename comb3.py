@@ -23,7 +23,7 @@ lights_two = sci2_images.summary['imagetyp'] == 'Light Frame'
 
 
 for exp_time in sorted(light_times):
-    calibrated_science = sci1_images.files_filtered(imagetyp='Light Frame', exptime=exp_time,
+    calibrated_science = sci2_images.files_filtered(imagetyp='Light Frame', exptime=exp_time,
                                                      include_path=True)
     combined_science = ccdp.combine(calibrated_science,
                                  method='average'
@@ -31,7 +31,7 @@ for exp_time in sorted(light_times):
 
     combined_science.meta['combined'] = True
 
-    science_file_name = 'combined_science_10-12_{:6.3f}.fit'.format(exp_time)
+    science_file_name = 'combined_science_17-19_{:6.3f}.fit'.format(exp_time)
     ccdp.fits_ccddata_writer(combined_science, science_file_name, hdu_mask=None, hdu_uncertainty=None)
-    shutil.move(science_file_name, Sci_path1)
+    shutil.move(science_file_name, Sci_path2)
 
