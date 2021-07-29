@@ -9,7 +9,7 @@ from astropy.table import Table
 with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
     data = hdul[0].data  # assume that primary hdu is an image
 
-sky = data[0, 0:1535] #edge of background
+sky = data[0:50, 0:1535] #edge of background
 avg = np.mean(sky) # background average
 print(avg)
 print(np.std(sky))
