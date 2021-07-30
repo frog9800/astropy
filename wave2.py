@@ -16,7 +16,7 @@ print(np.size(cut, 0))
 print(cut)
 print(avg)
 print(np.std(sky))
-stv = np.std(sky)*2.5 # 3x standard deviation
+stv = np.std(sky)*5 # 3x standard deviation
 sample = avg + stv
 print(sample)
 
@@ -52,6 +52,7 @@ print(np.size(spec, 0))
 
 #Averaging out all spectrum rows.
 extract = spec.mean(axis=0)
+noise= spec.std(axis=0)
 
 print(np.shape(extract))
 
@@ -63,5 +64,13 @@ inf['x'] = np.array(num, dtype=np.float64)
 inf['y'] = np.array(extract, dtype=np.float64)
 ascii.write(inf, 'Cal_science1/algorithm.txt', overwrite=True)
 
+print(extract/noise)
+print(np.size(extract/noise))
 
-
+x = num
+y = extract/noise
+plt.title("10-12_spec signal/noise ratio (sigma=5)")
+plt.xlabel("Column")
+plt.ylabel("signal/noise")
+plt.plot(x,y)
+plt.show()
