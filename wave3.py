@@ -43,6 +43,7 @@ detect2 = np.argwhere(sample2 < cut1)
 detect3 = np.argwhere(sample3 < cut1)
 detect4 = np.argwhere(sample4 < cut1)
 detect5 = np.argwhere(sample5 < cut1)
+print(np.size(detect2, 0))
 
 #spectrum coordinate from top and bottom
 spec1 = data1[np.int_((np.amin(detect1))):np.int_((np.amax(detect1)))]
@@ -57,7 +58,7 @@ extract4 = spec4.mean(axis=0)
 extract5 = spec5.mean(axis=0)
 
 skybot = np.amax(detect2) + 50
-skytop = skybot + np.size(spec2, 0)
+skytop = skybot + np.size(spec2, 0) + 1
 
 print(np.size(spec2, 0))
 
@@ -65,13 +66,16 @@ sky2 = data1[np.int_(skybot):np.int_(skytop)]
 print(skybot)
 print(skytop)
 print(np.size(sky2, 0))
+print(np.mean(sky2))
 
-skyspec2 = np.subtract(spec2, sky2)
+skysam = sky2.sum(axis=0)
+
+skyspec2 = np.subtract(spec2.mean(axis=0), skysam)
 
 
 x = np.arange(start=1, stop=1537, step=1)
 y1 = spec2.mean(axis=0)
-y2 = skyspec2.mean(axis=0)
+y2 = skyspec2
 y3 = spec3.mean(axis=0)
 y4 = spec4.mean(axis=0)
 y5 = spec5.mean(axis=0)
