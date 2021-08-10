@@ -70,8 +70,8 @@ print(np.mean(sky2))
 
 skysam = sky2.sum(axis=0)
 
-skyspec2 = np.subtract(spec2.mean(axis=0), skysam)
-
+skyspec2 = np.subtract(spec2.sum(axis=0), skysam)/np.size(detect2, 0)
+print(np.subtract(spec2.sum(axis=0), skysam))
 
 x = np.arange(start=1, stop=1537, step=1)
 y1 = spec2.mean(axis=0)
