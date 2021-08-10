@@ -7,6 +7,6 @@ header['INSTRUME'] = "10-C Spectrograph"
 header['OBJECT'] = "59 Cyg (SAO 50335) 01:50, 02:01, 02:12"
 header['GRATING'] = "1200"
 header['GRATING'] = "26.0 degrees"
-header['DATE'] = "2000-01-01T00:00:00.000"
+
 
 fits.writeto('Cal_science1/output74.fits', data, header, overwrite=True)
