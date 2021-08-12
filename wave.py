@@ -12,7 +12,7 @@ with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
 # get values of the subsection from x=1 to 1536, y=499 to 500 (inclusive)
 hdp = data[498:499, 0:1535]
 print(hdp)
-pp = hdp.sum(axis=0)
+pp = hdp.mean(axis=0)
 print(np.shape(pp))
 
 num = np.arange(start=1, stop=1536, step=1)
