@@ -16,35 +16,23 @@ print(np.size(cut, 0))
 print(cut)
 print(avg)
 print(np.std(sky))
-stv = np.std(sky)*4 # 3x standard deviation
+stv = np.std(sky)*4 # standard deviation
 sample = avg + stv
 print(sample)
 
 
 detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
-min = (np.amin(detect)) # bottom of the spectrum
-max = (np.amax(detect)) # top of the spectrum
+min = np.amin(detect) # bottom of the spectrum
+max = np.amax(detect) + 1 # top of the spectrum
 print(min)
 print(max)
 
 
-#spec = sample < data # spectrum condition. spectrum must be more than average + 3x standard deviation of backgrouind pixel
-
-#line = data[np.all(spec, axis=1), :] # slicing arrays by given condition.
-
-#print(np.size(line, 0))
-
-#leng= np.size(line, 0) # size of sliced arrays = total number of rows of the spectrum
-
-# Assign two consecutive rows.  half of the total number of spectrum rows = midpoint.
-#mid1 = leng/2
-#mid2 = mid1 - 1
-
-#make sure to state them as integer.
+#
 
 
-#spectrum coordinate from top and bottom
+#spectrum coordinate from top and bottom. Make sure to state them as integer.
 spec = data[np.int_(min):np.int_(max)]
 
 print(np.size(spec, 0))
@@ -52,7 +40,6 @@ print(np.size(spec, 0))
 
 #Averaging out all spectrum rows.
 extract = spec.mean(axis=0)
-noise= spec.std(axis=0)
 
 print(np.shape(extract))
 
