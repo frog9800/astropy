@@ -24,16 +24,17 @@ print(sample)
 detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
 min = np.amin(detect)  # bottom of the spectrum
-max = np.amax(detect) + 1  # top of the spectrum
+max = np.amax(detect)  + 1 # top of the spectrum
 print(min)
 print(max)
 print(np.size(detect, 0))
 
 
-
+print(detect)
 
 #spectrum coordinate from top and bottom. Make sure to state them as integer.
 spec = data[np.int_(min):np.int_(max)]
+
 
 print(np.size(spec, 0))
 
