@@ -24,7 +24,7 @@ print(sample)
 detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
 min = np.amin(detect)  # bottom of the spectrum
-max = np.amax(detect)  # top of the spectrum
+max = np.amax(detect) + 1  # top of the spectrum
 print(min)
 print(max)
 print(np.size(detect, 0))
