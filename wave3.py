@@ -83,7 +83,6 @@ y4 = spec4.mean(axis=0)
 y5 = spec5.mean(axis=0)
 
 
-
 plt.title("Extractions of combined_science_10-12_600.000.fit")
 plt.xlabel("Column")
 plt.ylabel("Average adu")

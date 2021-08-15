@@ -22,7 +22,7 @@ for ccd, file_name in ex1_images_raw.ccds(imagetyp='Dark Frame',  # Just get the
     modified= Path('adusample')
     ccd.write(modified / file_name)
 
-calibrated_path = ex1_path_raw
+calibrated_path = modified
 reduced_images = ccdp.ImageFileCollection(calibrated_path)
 
 #Median combine for master dark
@@ -37,20 +37,21 @@ for exp_time in sorted(dark_times):
                                  )
 
     combined_dark.meta['combined'] = True
-    dark_file_name = 'raw_sample/combined_dark_{:6.3f}.fit'.format(exp_time)
+    dark_file_name = 'adusample/combined_dark_{:6.3f}.fit'.format(exp_time)
     ccdp.fits_ccddata_writer(combined_dark, dark_file_name, hdu_mask=None, hdu_uncertainty = None
     )
 
-#Calibration of Science Images
 
-reduced_path = Path('adusample')
-ifc_reduced = ccdp.ImageFileCollection(modified)
+#Calibration of Science Images(Subtracting master dark)
+
+reduced_path = modified
+ifc_reduced = ccdp.ImageFileCollection(reduced_path)
 
 science_imagetyp = 'Light Frame'
 dark_imagetyp = 'Dark Frame'
 exposure = 'exptime'
 
-pathraw = Path('sample_combine')
+pathraw = ex1_path_raw
 ifc_raw = ccdp.ImageFileCollection(pathraw)
 
 combo_calibs = ifc_reduced.summary[ifc_reduced.summary['combined'].filled(False).astype('bool')]
@@ -110,17 +111,11 @@ for light, file_name in ifc_raw.ccds(imagetyp=science_imagetyp, return_fname=Tru
 
 #Combining Science Images
 
-Sci_path1 = Path('Cal_science1')
-Sci_path2 = Path('Cal_science2')
+Sci_path1 = modified
 sci1_images = ccdp.ImageFileCollection(Sci_path1)
-sci2_images = ccdp.ImageFileCollection(Sci_path2)
 
 lights = sci1_images.summary['imagetyp'] == 'Light Frame'
 light_times = set(sci1_images.summary['exptime'][lights])
-
-lights_two = sci2_images.summary['imagetyp'] == 'Light Frame'
-#light_times_two = set(sci2_images.summary['exptime'][lights])
-
 
 for exp_time in sorted(light_times):
     calibrated_science = sci1_images.files_filtered(imagetyp='Light Frame', exptime=exp_time,
@@ -131,12 +126,11 @@ for exp_time in sorted(light_times):
 
     combined_science.meta['combined'] = True
 
-    science_file_name = 'combined_science_10-12_{:6.3f}.fit'.format(exp_time)
+    science_file_name = 'adusample/combined_science_10-12_{:6.3f}.fit'.format(exp_time)
     ccdp.fits_ccddata_writer(combined_science, science_file_name, hdu_mask=None, hdu_uncertainty=None)
-    shutil.move(science_file_name, Sci_path1)
 
 #Editing Header
-data, header = fits.getdata("Cal_science1/combined_science_10-12_600.000.fit", header=True)
+data, header = fits.getdata("adusample/combined_science_10-12_600.000.fit", header=True)
 hdu_number = 0 # HDU means header data unit
 header['CALSTAT'] = "BD"
 header['TELESCOP'] = "Barber20"
@@ -145,10 +139,10 @@ header['OBJECT'] = "59 Cyg (SAO 50335) 01:50, 02:01, 02:12" #Name of object spec
 header['GRATING'] = "1200" # Which grating was used
 header['GRATING'] = "26.0 degrees" # Angle of the grating for the spectrum
 
-fits.writeto('Cal_science1/output.fit', data, header, overwrite=True)
+fits.writeto('adusample/final_combined_science_10-12_600.000.fit', data, header, overwrite=True)
 
 #Spectrum Extraction
-with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
+with fits.open('adusample/final_combined_science_10-12_600.000.fit') as hdul:  # open a FITS file
     data = hdul[0].data  # assume that primary hdu is an image
 
 sky = data[0:50, 0:1535] #edge of background
@@ -158,10 +152,9 @@ print(np.size(cut, 0))
 print(cut)
 print(avg)
 print(np.std(sky))
-stv = np.std(sky)*4 # standard deviation
+stv = np.std(sky)*4 # standard deviation(Sigma)
 sample = avg + stv
 print(sample)
-
 
 detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
@@ -171,15 +164,12 @@ print(min)
 print(max)
 print(np.size(detect, 0))
 
-
 print(detect)
 
 #spectrum coordinate from top and bottom. Make sure to state them as integer.
 spec = data[np.int_(min):np.int_(max)]
 
-
 print(np.size(spec, 0))
-
 
 #Averaging out all spectrum rows.
 extract = spec.mean(axis=0)
@@ -192,4 +182,15 @@ num = np.arange(start=1, stop=1537, step=1)
 inf = Table()
 inf['x'] = np.array(num, dtype=np.float64)
 inf['y'] = np.array(extract, dtype=np.float64)
-ascii.write(inf, 'Cal_science1/algorithm.txt', overwrite=True)
+ascii.write(inf, 'adusample/combined_science_10-12_600.000_raw_extraction.txt', overwrite=True)
+
+#Sky subtraction
+skybot = np.amax(detect) + 50
+skytop = skybot + np.size(spec, 0)
+sky2 = data[np.int_(skybot):np.int_(skytop)]
+skysam = sky2.sum(axis=0)
+skyspec2 = np.subtract(spec.sum(axis=0), skysam)/np.size(detect, 0)
+sub = Table()
+sub['x'] = np.array(num, dtype=np.float64)
+sub['y'] = np.array(skyspec2, dtype=np.float64)
+ascii.write(sub, 'adusample/combined_science_10-12_600.000_skysubtracted.txt', overwrite=True)
