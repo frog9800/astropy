@@ -9,7 +9,7 @@ from astropy.io import ascii
 from astropy.table import Table
 
 #adu setting
-ex1_path_raw = Path('raw_sample')
+ex1_path_raw = Path('raw_sample') # Sample directory
 
 ex1_images_raw = ImageFileCollection(ex1_path_raw)
 
@@ -19,7 +19,7 @@ for ccd, file_name in ex1_images_raw.ccds(imagetyp='Dark Frame',  # Just get the
                                          return_fname=True  # Provide the file name too.
                                          ):
     # Save the result
-    modified= Path('adusample')
+    modified= Path('adusample') # Result directory
     ccd.write(modified / file_name)
 
 calibrated_path = modified
@@ -37,7 +37,7 @@ for exp_time in sorted(dark_times):
                                  )
 
     combined_dark.meta['combined'] = True
-    dark_file_name = 'adusample/combined_dark_{:6.3f}.fit'.format(exp_time)
+    dark_file_name = 'adusample/combined_dark_{:6.3f}.fit'.format(exp_time) # Naming master dark file. Add proper location to save.
     ccdp.fits_ccddata_writer(combined_dark, dark_file_name, hdu_mask=None, hdu_uncertainty = None
     )
 
@@ -126,11 +126,11 @@ for exp_time in sorted(light_times):
 
     combined_science.meta['combined'] = True
 
-    science_file_name = 'adusample/combined_science_10-12_{:6.3f}.fit'.format(exp_time)
+    science_file_name = 'adusample/combined_science_10-12_{:6.3f}.fit'.format(exp_time) #Naming combined images. Add proper location to save.
     ccdp.fits_ccddata_writer(combined_science, science_file_name, hdu_mask=None, hdu_uncertainty=None)
 
 #Editing Header
-data, header = fits.getdata("adusample/combined_science_10-12_600.000.fit", header=True)
+data, header = fits.getdata("adusample/combined_science_10-12_600.000.fit", header=True) #Open the combined imgage to edit headers.
 hdu_number = 0 # HDU means header data unit
 header['CALSTAT'] = "BD"
 header['TELESCOP'] = "Barber20"
@@ -142,41 +142,37 @@ header['GRATING'] = "26.0 degrees" # Angle of the grating for the spectrum
 fits.writeto('adusample/final_combined_science_10-12_600.000.fit', data, header, overwrite=True)
 
 #Spectrum Extraction
-with fits.open('adusample/final_combined_science_10-12_600.000.fit') as hdul:  # open a FITS file
+with fits.open('adusample/final_combined_science_10-12_600.000.fit') as hdul:  # open the final combined image.
     data = hdul[0].data  # assume that primary hdu is an image
 
 sky = data[0:50, 0:1535] #edge of background
 avg = np.mean(sky) # background average
 cut = np.mean(data, axis=1)
-print(np.size(cut, 0))
-print(cut)
-print(avg)
-print(np.std(sky))
+
+print('The average pixel value of the sky sample is ' + str(avg))
 stv = np.std(sky)*4 # standard deviation(Sigma)
+print('The pixel value of Sigma is ' + str(stv))
 sample = avg + stv
-print(sample)
+print('The pixel value of the spectrum must be more than ' + str(sample))
 
 detect = np.argwhere(sample < cut) # coordinate(order of rows) of the spectrum
 
 min = np.amin(detect)  # bottom of the spectrum
 max = np.amax(detect)  + 1 # top of the spectrum
-print(min)
-print(max)
-print(np.size(detect, 0))
+print('Bottom edge of the spectrum: y= ' + str(min + 1))
+print('Top edge of the spectrum: y= ' + str(max))
+print('Thickness of the spectrum: ' + str(np.size(detect, 0)))
 
-print(detect)
 
 #spectrum coordinate from top and bottom. Make sure to state them as integer.
 spec = data[np.int_(min):np.int_(max)]
 
-print(np.size(spec, 0))
+print('Number of spectrum rows selected: ' + str(np.size(spec, 0)))
 
 #Averaging out all spectrum rows.
 extract = spec.mean(axis=0)
 
-print(np.shape(extract))
-
-# Writing to 1D extraction file
+# Writing to 1D extraction file(raw data)
 
 num = np.arange(start=1, stop=1537, step=1)
 inf = Table()
@@ -185,6 +181,7 @@ inf['y'] = np.array(extract, dtype=np.float64)
 ascii.write(inf, 'adusample/combined_science_10-12_600.000_raw_extraction.txt', overwrite=True)
 
 #Sky subtraction
+"""
 skybot = np.amax(detect) + 50
 skytop = skybot + np.size(spec, 0)
 sky2 = data[np.int_(skybot):np.int_(skytop)]
@@ -194,3 +191,4 @@ sub = Table()
 sub['x'] = np.array(num, dtype=np.float64)
 sub['y'] = np.array(skyspec2, dtype=np.float64)
 ascii.write(sub, 'adusample/combined_science_10-12_600.000_skysubtracted.txt', overwrite=True)
+"""
