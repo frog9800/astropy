@@ -1,5 +1,4 @@
 from pathlib import Path
-import shutil
 from astropy.nddata import CCDData
 from ccdproc import ImageFileCollection
 import ccdproc as ccdp
@@ -9,7 +8,8 @@ from astropy.io import fits
 from astropy.io import ascii
 from astropy.table import Table
 
-ex1_path_raw = Path('sample_combine')
+#adu setting
+ex1_path_raw = Path('raw_sample')
 
 ex1_images_raw = ImageFileCollection(ex1_path_raw)
 
@@ -19,15 +19,15 @@ for ccd, file_name in ex1_images_raw.ccds(imagetyp='Dark Frame',  # Just get the
                                          return_fname=True  # Provide the file name too.
                                          ):
     # Save the result
-    modified= Path('addheadsamp')
+    modified= Path('adusample')
     ccd.write(modified / file_name)
 
-calibrated_path = Path('addheadsamp')
+calibrated_path = ex1_path_raw
 reduced_images = ccdp.ImageFileCollection(calibrated_path)
 
+#Median combine for master dark
 darks = reduced_images.summary['imagetyp'] == 'Dark Frame'
 dark_times = set(reduced_images.summary['exptime'][darks])
-
 
 for exp_time in sorted(dark_times):
     calibrated_darks = reduced_images.files_filtered(imagetyp='Dark Frame', exptime=exp_time,
@@ -37,14 +37,14 @@ for exp_time in sorted(dark_times):
                                  )
 
     combined_dark.meta['combined'] = True
-    dark_file_name = 'new_combined_dark_{:6.3f}.fit'.format(exp_time)
+    dark_file_name = 'raw_sample/combined_dark_{:6.3f}.fit'.format(exp_time)
     ccdp.fits_ccddata_writer(combined_dark, dark_file_name, hdu_mask=None, hdu_uncertainty = None
     )
 
-shutil.move(dark_file_name, calibrated_path) # moving a file to the original directory
+#Calibration of Science Images
 
-reduced_path = Path('addheadsamp')
-ifc_reduced = ccdp.ImageFileCollection(reduced_path)
+reduced_path = Path('adusample')
+ifc_reduced = ccdp.ImageFileCollection(modified)
 
 science_imagetyp = 'Light Frame'
 dark_imagetyp = 'Dark Frame'
@@ -108,6 +108,8 @@ for light, file_name in ifc_raw.ccds(imagetyp=science_imagetyp, return_fname=Tru
     calibrated_name = 'calibrated_' + file_name
     reduced.write(reduced_path / calibrated_name )
 
+#Combining Science Images
+
 Sci_path1 = Path('Cal_science1')
 Sci_path2 = Path('Cal_science2')
 sci1_images = ccdp.ImageFileCollection(Sci_path1)
@@ -133,17 +135,19 @@ for exp_time in sorted(light_times):
     ccdp.fits_ccddata_writer(combined_science, science_file_name, hdu_mask=None, hdu_uncertainty=None)
     shutil.move(science_file_name, Sci_path1)
 
+#Editing Header
 data, header = fits.getdata("Cal_science1/combined_science_10-12_600.000.fit", header=True)
 hdu_number = 0 # HDU means header data unit
 header['CALSTAT'] = "BD"
 header['TELESCOP'] = "Barber20"
 header['INSTRUME'] = "10-C Spectrograph"
-header['OBJECT'] = "59 Cyg (SAO 50335) 01:50, 02:01, 02:12"
-header['GRATING'] = "1200"
-header['GRATING'] = "26.0 degrees"
+header['OBJECT'] = "59 Cyg (SAO 50335) 01:50, 02:01, 02:12" #Name of object spectrum is from
+header['GRATING'] = "1200" # Which grating was used
+header['GRATING'] = "26.0 degrees" # Angle of the grating for the spectrum
 
 fits.writeto('Cal_science1/output.fit', data, header, overwrite=True)
 
+#Spectrum Extraction
 with fits.open('Cal_science1/output.fit') as hdul:  # open a FITS file
     data = hdul[0].data  # assume that primary hdu is an image
 
