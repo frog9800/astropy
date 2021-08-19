@@ -13,12 +13,7 @@ With python interface, the required packages to install are astropy, numpy, and 
 
 For this demonstration, the two directories will be named, "raw\_sample" for input directory and "adusample" for output directory.  
 
-\begin{figure}[H]
-    \centering
-    \includegraphics{input.PNG}
-    \caption{raw\_sample(input directory)}
-    \label{fig:my_label1}
-\end{figure}
+![input](readme/input.PNG "Input Directory")
 
 The expected contents for input directory are dark images and science images for the calibration and extraction. The output directory must be empty before running the code. 
 
@@ -30,12 +25,7 @@ Before we begin, we should inspect summary headers of the images in order to sta
     print(im_collection.summary['file', 'imagetyp', 'exptime'])
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics{sum1.PNG}
-    \caption{Summary headers of the dark and science images.}
-    \label{fig:my_label3}
-\end{figure}
+![Summary headers of the dark and science images.](readme/sum1.PNG "Summary Header")
 
 Because the calibration to target images require the names of the image types which are stated from inner headers, it is important to check image type headers. The names of image types are varied from different tools and settings. From this example, the image types are stated as "Dark Frame" for dark images and "Light Frame" for science images. These header information will be used later for the image calibration.
 
@@ -298,20 +288,10 @@ In[7]:
 
 Out[7]:
 
-\begin{figure}[H]
-    \centering
-    \includegraphics{result.PNG}
-    \caption{Output of the concole tab}
-    \label{fig:my_label7}
-\end{figure}
+![Output of the concole tab](readme/result.PNG "Result Console Tab")
 
+![adusample(output directory)](readme/output.PNG "Output Directory")
 
-\begin{figure}[H]
-    \centering
-    \includegraphics{output.PNG}
-    \caption{adusample(output directory)}
-    \label{fig:my_label2}
-\end{figure}
 
 
 ## Sky Subtraction(optional)
